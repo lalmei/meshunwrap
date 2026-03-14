@@ -1,0 +1,11 @@
+---
+description: Keep CLI (Typer/Rich) in cli/; core logic in src; no CLI imports in core.
+globs: "src/meshunwrap/**/*.py"
+alwaysApply: true
+---
+
+# Layering
+
+- **Core logic** (`config` and domain modules): Pure logic with no Typer, Rich, or `cli` imports. Inputs and outputs stay data-oriented.
+- **cli/**: Commands call into core modules; all Typer/Rich/UX live here.
+- **Direction**: `cli` → core. Never the reverse.

@@ -1,0 +1,26 @@
+# Changes here will be overwritten by Copier.
+_src_path: /Users/lalmei/projects/repoman/src/repoman
+author_email: leandro.g.almeida@gmail.com
+author_fullname: Leandro G. Almeida
+author_username: lalmei
+ci: github.com
+container_registry: ''
+copyright_date: '2026'
+copyright_holder: Leandro G. Almeida
+copyright_holder_email: leandro.g.almeida@gmail.com
+copyright_license: ISC
+dataset_enabled: false
+docs_only: false
+fastapi_enabled: false
+project_description: UV unwrapping and figure reproduction for tube-like meshes
+project_name: meshunwrap
+python_distribution_name: meshunwrap
+python_notebooks: false
+python_package_command_line_name: meshunwrap
+python_package_distribution_name: meshunwrap
+python_package_import_name: meshunwrap
+rag_enabled: false
+repository_name: meshunwrap
+repository_namespace: lalmei
+repository_provider: github
+
