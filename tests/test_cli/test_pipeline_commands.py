@@ -23,3 +23,25 @@ def test_run_example_writes_expected_outputs(cli_runner, cli_app, tmp_path: Path
     assert (output_dir / "mesh.png").exists()
     assert (output_dir / "normals.png").exists()
     assert (output_dir / "uv.png").exists()
+
+
+def test_unwrap_fixture_writes_uv_artifact(cli_runner, cli_app, tmp_path: Path) -> None:
+    output_dir = tmp_path / "fixture-unwrap"
+    result = cli_runner.invoke(cli_app, ["unwrap", "--fixture", "bent-pipe", "--output-dir", str(output_dir)])
+    assert result.exit_code == 0
+    assert (output_dir / "uv.npz").exists()
+
+
+def test_run_example_with_fixture_writes_outputs(cli_runner, cli_app, tmp_path: Path) -> None:
+    output_dir = tmp_path / "fixture-example"
+    result = cli_runner.invoke(
+        cli_app,
+        ["run-example", "--fixture", "stanford-bunny", "--output-dir", str(output_dir)],
+    )
+    assert result.exit_code == 0
+    assert not (output_dir / "curved_pipe_points.txt").exists()
+    assert (output_dir / "reconstruction.npz").exists()
+    assert (output_dir / "uv.npz").exists()
+    assert (output_dir / "mesh.png").exists()
+    assert (output_dir / "normals.png").exists()
+    assert (output_dir / "uv.png").exists()

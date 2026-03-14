@@ -14,6 +14,7 @@ app = Typer(add_completion=True, no_args_is_help=True)
 def unwrap(
     mesh_artifact: Path | None = Option(None, "--mesh-artifact", help="Existing reconstruction artifact (.npz)"),
     input_path: Path | None = Option(None, "--input", "-i", help="Point cloud to reconstruct before unwrapping"),
+    fixture: str | None = Option(None, "--fixture", help="Named vendored mesh fixture"),
     output_dir: Path = Option(Path("outputs/unwrap"), "--output-dir", "-o", help="Directory for UV artifacts"),
     ring_size: int | None = Option(None, "--ring-size", help="Known ring size for structured tube point clouds"),
 ) -> None:
@@ -21,7 +22,7 @@ def unwrap(
     if mesh_artifact is not None:
         mesh = load_mesh_artifact(mesh_artifact)
     else:
-        mesh = reconstruct_from_input(input_path=input_path, ring_size=ring_size)
+        mesh = reconstruct_from_input(input_path=input_path, ring_size=ring_size, fixture=fixture)
     result = unwrap_mesh(mesh)
     output_dir.mkdir(parents=True, exist_ok=True)
     artifact = save_uv_artifact(result, output_dir / "uv.npz")
