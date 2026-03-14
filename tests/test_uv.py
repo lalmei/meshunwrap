@@ -17,7 +17,9 @@ from meshunwrap import (
 )
 
 
-def make_cylinder_mesh(n_long: int = 8, n_ring: int = 20, radius: float = 1.0, length: float = 4.0):
+def make_cylinder_mesh(
+    n_long: int = 8, n_ring: int = 20, radius: float = 1.0, length: float = 4.0
+):
     points = []
     for i in range(n_long):
         z = -0.5 * length + length * i / (n_long - 1)
@@ -72,8 +74,12 @@ def test_adjacency_only_input_is_supported() -> None:
 
 def test_example_mesh_reconstructs_and_parameterizes() -> None:
     example = make_example_mesh()
-    reconstructed = reconstruct_tube_mesh(example.points, ring_size=example.metadata["ring_size"])
-    result = parameterize_tube(reconstructed.points, faces=reconstructed.faces, normals=reconstructed.normals)
+    reconstructed = reconstruct_tube_mesh(
+        example.points, ring_size=example.metadata["ring_size"]
+    )
+    result = parameterize_tube(
+        reconstructed.points, faces=reconstructed.faces, normals=reconstructed.normals
+    )
 
     assert reconstructed.points.shape == example.points.shape
     assert len(reconstructed.faces) > 0
@@ -89,7 +95,9 @@ def test_seam_offsets_create_large_longitude_jump() -> None:
     jumps = []
     for vertex, west_neighbors in zip(result.seam_path[1:-1], result.west_of_seam):
         for neighbor in west_neighbors:
-            jumps.append(result.phi_unwrapped[int(neighbor)] - result.phi_unwrapped[int(vertex)])
+            jumps.append(
+                result.phi_unwrapped[int(neighbor)] - result.phi_unwrapped[int(vertex)]
+            )
 
     assert jumps
     assert max(abs(jump) for jump in jumps) > math.pi
