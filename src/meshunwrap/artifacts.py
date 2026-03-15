@@ -1,3 +1,5 @@
+"""Read and write persisted mesh and UV artifacts."""
+
 from __future__ import annotations
 
 import json
@@ -10,6 +12,7 @@ from meshunwrap.uv import UVResult, build_adjacency_from_faces
 
 
 def save_mesh_artifact(mesh: MeshData, path: str | Path) -> Path:
+    """Serialize a mesh artifact to a NumPy archive."""
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     np.savez(
@@ -23,6 +26,7 @@ def save_mesh_artifact(mesh: MeshData, path: str | Path) -> Path:
 
 
 def load_mesh_artifact(path: str | Path) -> MeshData:
+    """Load a mesh artifact from a NumPy archive."""
     data = np.load(path, allow_pickle=True)
     points = np.asarray(data["points"], dtype=float)
     faces = np.asarray(data["faces"], dtype=int)
@@ -33,6 +37,7 @@ def load_mesh_artifact(path: str | Path) -> MeshData:
 
 
 def save_uv_artifact(result: UVResult, path: str | Path) -> Path:
+    """Serialize UV parameterization outputs to a NumPy archive."""
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     west = np.array(result.west_of_seam, dtype=object)
@@ -50,6 +55,7 @@ def save_uv_artifact(result: UVResult, path: str | Path) -> Path:
 
 
 def load_uv_artifact(path: str | Path) -> UVResult:
+    """Load UV parameterization outputs from a NumPy archive."""
     data = np.load(path, allow_pickle=True)
     west = [np.asarray(item, dtype=int) for item in data["west_of_seam"].tolist()]
     return UVResult(

@@ -1,9 +1,15 @@
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
+
+from typer import Typer
+from typer.testing import CliRunner
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
-def test_registered_commands_are_visible(cli_runner, cli_app) -> None:
+def test_registered_commands_are_visible(cli_runner: CliRunner, cli_app: Typer) -> None:
     result = cli_runner.invoke(cli_app, ["--help"])
     assert result.exit_code == 0
     help_text = result.output
@@ -13,13 +19,9 @@ def test_registered_commands_are_visible(cli_runner, cli_app) -> None:
     assert "run-example" in help_text
 
 
-def test_run_example_writes_expected_outputs(
-    cli_runner, cli_app, tmp_path: Path
-) -> None:
+def test_run_example_writes_expected_outputs(cli_runner: CliRunner, cli_app: Typer, tmp_path: Path) -> None:
     output_dir = tmp_path / "example"
-    result = cli_runner.invoke(
-        cli_app, ["run-example", "--output-dir", str(output_dir)]
-    )
+    result = cli_runner.invoke(cli_app, ["run-example", "--output-dir", str(output_dir)])
     assert result.exit_code == 0
     assert (output_dir / "curved_pipe_points.txt").exists()
     assert (output_dir / "reconstruction.npz").exists()
@@ -29,18 +31,14 @@ def test_run_example_writes_expected_outputs(
     assert (output_dir / "uv.png").exists()
 
 
-def test_unwrap_fixture_writes_uv_artifact(cli_runner, cli_app, tmp_path: Path) -> None:
+def test_unwrap_fixture_writes_uv_artifact(cli_runner: CliRunner, cli_app: Typer, tmp_path: Path) -> None:
     output_dir = tmp_path / "fixture-unwrap"
-    result = cli_runner.invoke(
-        cli_app, ["unwrap", "--fixture", "bent-pipe", "--output-dir", str(output_dir)]
-    )
+    result = cli_runner.invoke(cli_app, ["unwrap", "--fixture", "bent-pipe", "--output-dir", str(output_dir)])
     assert result.exit_code == 0
     assert (output_dir / "uv.npz").exists()
 
 
-def test_run_example_with_fixture_writes_outputs(
-    cli_runner, cli_app, tmp_path: Path
-) -> None:
+def test_run_example_with_fixture_writes_outputs(cli_runner: CliRunner, cli_app: Typer, tmp_path: Path) -> None:
     output_dir = tmp_path / "fixture-example"
     result = cli_runner.invoke(
         cli_app,

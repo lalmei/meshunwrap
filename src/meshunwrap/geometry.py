@@ -1,16 +1,28 @@
+"""Mesh reconstruction helpers for structured tubular point clouds."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
 from meshunwrap.uv import build_adjacency_from_faces, estimate_vertex_normals
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
+
+POINT_DIMENSIONS = 3
+POINT_ARRAY_NDIM = 2
+FRAME_ALIGNMENT_THRESHOLD = 0.9
+MIN_SECTION_COUNT = 4
+
 
 @dataclass
 class MeshData:
+    """In-memory representation of a reconstructed triangle mesh."""
+
     points: np.ndarray
     faces: np.ndarray
     adjacency: list[np.ndarray]
@@ -19,8 +31,9 @@ class MeshData:
 
 
 def load_point_cloud_txt(path: str | Path) -> np.ndarray:
+    """Load a three-column text file containing XYZ point positions."""
     points = np.loadtxt(path, dtype=float)
-    if points.ndim != 2 or points.shape[1] != 3:
+    if points.ndim != POINT_ARRAY_NDIM or points.shape[1] != POINT_DIMENSIONS:
         raise ValueError("point cloud text file must contain three floating-point columns")
     return points
 
@@ -37,7 +50,7 @@ def _principal_axis(points: np.ndarray) -> np.ndarray:
 
 def _orthonormal_frame(direction: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     reference = np.array([1.0, 0.0, 0.0])
-    if abs(np.dot(reference, direction)) > 0.9:
+    if abs(np.dot(reference, direction)) > FRAME_ALIGNMENT_THRESHOLD:
         reference = np.array([0.0, 1.0, 0.0])
     u = reference - np.dot(reference, direction) * direction
     u /= np.linalg.norm(u)
@@ -50,11 +63,12 @@ def _candidate_ring_sizes(n_points: int) -> list[int]:
     return [
         divisor
         for divisor in range(6, n_points // 2 + 1)
-        if n_points % divisor == 0 and n_points // divisor >= 4
+        if n_points % divisor == 0 and n_points // divisor >= MIN_SECTION_COUNT
     ]
 
 
 def infer_ring_size(points: np.ndarray) -> int:
+    """Infer the per-ring sample count of a structured tubular point cloud."""
     n_points = len(points)
     axis = _principal_axis(points)
     projection = np.sort(points @ axis)
@@ -77,7 +91,8 @@ def infer_ring_size(points: np.ndarray) -> int:
     return best_ring_size
 
 
-def reconstruct_tube_mesh(points: np.ndarray, ring_size: Optional[int] = None) -> MeshData:
+def reconstruct_tube_mesh(points: np.ndarray, ring_size: int | None = None) -> MeshData:
+    """Connect an ordered tubular point cloud into a triangle mesh."""
     if ring_size is None:
         ring_size = infer_ring_size(points)
     if len(points) % ring_size != 0:
@@ -150,6 +165,7 @@ def make_example_mesh(
     bend: float = 0.85,
     twist: float = 1.25,
 ) -> MeshData:
+    """Generate a curved tubular mesh used by the demo pipeline."""
     ts = np.linspace(0.0, 1.0, n_sections)
     points = []
     for t in ts:
