@@ -20,6 +20,8 @@ from meshunwrap._version import (
     version_info,
 )
 from meshunwrap.utils.theme.theme import set_theme
+
+
 class TestVersionFunctions:
     """Test version-related functions."""
 
@@ -57,9 +59,7 @@ class TestInterpreterNameVersion:
         assert isinstance(result[1], str)
 
     @patch("sys.implementation")
-    def test_interpreter_name_version_without_implementation(
-        self, mock_implementation: Any
-    ) -> None:
+    def test_interpreter_name_version_without_implementation(self, mock_implementation: Any) -> None:
         """Test _interpreter_name_version when sys.implementation doesn't exist."""
         delattr(sys, "implementation")
         try:

@@ -1,25 +1,30 @@
+"""Render mesh, normal, and UV figures for saved artifacts."""
+
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
-import matplotlib
+import matplotlib as mpl
 
-matplotlib.use("Agg")
+mpl.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from meshunwrap.geometry import MeshData
-from meshunwrap.uv import UVResult
+if TYPE_CHECKING:
+    from meshunwrap.geometry import MeshData
+    from meshunwrap.uv import UVResult
 
 
-def _style_3d_axes(ax: plt.Axes) -> None:
+def _style_3d_axes(ax: Any) -> None:
     ax.set_axis_off()
     ax.view_init(elev=22, azim=-62)
 
 
 def render_mesh_figure(mesh: MeshData, path: str | Path) -> Path:
+    """Render the reconstructed surface mesh to a PNG image."""
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
 
@@ -39,6 +44,7 @@ def render_mesh_figure(mesh: MeshData, path: str | Path) -> Path:
 
 
 def render_normal_figure(mesh: MeshData, path: str | Path, sample_index: int | None = None) -> Path:
+    """Render the mesh with one sampled vertex normal highlighted."""
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     idx = len(mesh.points) // 3 if sample_index is None else sample_index
@@ -74,6 +80,7 @@ def render_normal_figure(mesh: MeshData, path: str | Path, sample_index: int | N
 
 
 def render_uv_figure(result: UVResult, path: str | Path) -> Path:
+    """Render the UV scatter plot to a PNG image."""
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
 

@@ -1,6 +1,6 @@
 """Configuration for the pytest test suite."""
 
-import pytest  # noqa: I001 - Import order is correct; isort may flag due to template variable substitution
+import pytest
 from typer import Typer
 from typer.testing import CliRunner
 
