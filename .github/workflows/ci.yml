@@ -24,18 +24,18 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
 
     - name: Setup Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: "3.12"
 
     - name: Setup uv
-      uses: astral-sh/setup-uv@v5
+      uses: astral-sh/setup-uv@v7
       with:
         enable-cache: true
         cache-dependency-glob: pyproject.toml
@@ -56,7 +56,7 @@ jobs:
       run: make check-api
 
     - name: Store objects inventory for tests
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: objects.inv
         path: site/objects.inv
@@ -73,7 +73,6 @@ jobs:
         - macos-latest
         - windows-latest
         python-version:
-        - "3.10"
         - "3.11"
         - "3.12"
         - "3.13"
@@ -87,34 +86,32 @@ jobs:
           resolution: lowest-direct
         - os: windows-latest
           resolution: lowest-direct
-    runs-on: ${{ matrix.os }}    continue-on-error: ${{ matrix.python-version == '3.14' }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.python-version == '3.14' }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
 
     - name: Setup Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
-        python-version: ${{ matrix.python-version }}        allow-prereleases: true
+        python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
 
     - name: Setup uv
-      uses: astral-sh/setup-uv@v5
+      uses: astral-sh/setup-uv@v7
       with:
         enable-cache: true
         cache-dependency-glob: pyproject.toml
         cache-suffix: ${{ matrix.resolution }}
     - name: Install dependencies
       env:
-        UV_RESOLUTION: ${{ matrix.resolution }}      run: make setup
+        UV_RESOLUTION: ${{ matrix.resolution }}
+      run: make setup
 
-    - name: Download objects inventory
-      uses: actions/download-artifact@v4
-      with:
-        name: objects.inv
-        path: site/
 
     - name: Run the test suite
       run: make test
